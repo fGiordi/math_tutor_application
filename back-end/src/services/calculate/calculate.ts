@@ -52,46 +52,70 @@ function transformSide(side: any, constantOnLeftSide: number, operator?: any) {
   return { calcAdded }
 }
 
-function transformEquation(simplified: any, lhs: any, rhs: any) {
+function transformEquation(simplified: any, lhs: any, rhs: any, rhsHasEmptyCoeff?: boolean) {
   // Move all the variable terms to the left-hand side of the equation
   // and all the constant terms to the right-hand side of the equation
 
+  const { coeff: leftSideCoeff, variable: leftSideVariable } = getVariableCoefficient(lhs)
+  const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
+
   const { coeff, variable } = getVariableCoefficient(lhs)
+
   // @ts-ignore
-  const constantOperator = parse(lhs).op
+  const constantOperatorLeft = parse(lhs).op
+  // @ts-ignore
+  const constantOperatorRight = !rhsHasEmptyCoeff && parse(rhs).op
   // @ts-ignore
   const constantOnLeftSide = parse(lhs).args[1].value
-  const { calcAdded } = transformSide(rhs, constantOnLeftSide, constantOperator)
-  const constantWithSign = constantOperator == '+' ? ' - ' + constantOnLeftSide : ' + ' + constantOnLeftSide
+  // @ts-ignore
+  const constantOnRightSide = !rhsHasEmptyCoeff ? parse(rhs).args[0].value : parse(rhs).value
+  // @ts-ignore
+
+  const addLeftSide = add(leftSideCoeff, -rightSideCoeff)
+  const addRightSide = add(constantOnRightSide, -constantOnLeftSide)
+
+  const constantWithSignLeft =
+    constantOperatorLeft == '+' ? ' - ' + constantOnLeftSide : ' + ' + constantOnLeftSide
+  const constantWithSignRight =
+    constantOperatorRight == '+' ? ' - ' + constantOnRightSide : ' + ' + constantOnRightSide
 
   // Display the steps to solve the equation
 
-  const steps = [
-    `Move all variable terms to LHS: ${variable}`,
-    `Move all constant terms to RHS: ${rhs} ${constantWithSign}`,
-    `Add ${constantOnLeftSide} to both sides: ${lhs} ${constantWithSign} = ${rhs} ${constantWithSign} `,
-    `Simplify and divide both sides by the factor: ${variable} = ${calcAdded}`,
-    `Solution: x = ${divide(calcAdded, coeff)}`
-  ]
-  return steps
+  const steps = rhsHasEmptyCoeff
+    ? [
+        `Move all variable terms to LHS: ${leftSideVariable}`,
+        `Move all constant terms to RHS: ${rhs} ${constantWithSignLeft}`,
+        `Add ${constantOnLeftSide} to both sides: ${lhs} ${constantWithSignLeft} = ${rhs} ${constantWithSignLeft} `,
+        `Simplify and divide both sides by the factor: ${leftSideVariable} = ${addRightSide}`,
+        `Solution: x = ${divide(addRightSide, leftSideCoeff)}`
+      ]
+    : [
+        `Move all variable terms to LHS: ${leftSideVariable} - ( ${rightSideVariable} )  `,
+        `Move all constant terms to RHS: ${constantOnRightSide} - ( ${constantOnLeftSide} ) `,
+        `Add the liked terms on LHS: 1. ${leftSideVariable} - ( ${rightSideVariable} ) = ${addLeftSide}x`,
+        `Add the liked terms on RHS: 2: ${constantOnRightSide} - ( ${constantOnLeftSide} ) = ${addRightSide}`,
+        `Simplify and divide both sides by the factor: ${addLeftSide}x = ${addRightSide}`,
+        `Solution: x = ${divide(addRightSide, addLeftSide)}`
+      ]
+
+  console.log('steps inside transform', steps)
+  // return steps
 }
 
 async function simplifyEquation(lhs: string, rhs: string) {
   // Simplify the equation
   const lhsNode = parse(lhs)
   const rhsNode = parse(rhs)
-  const simplifiedLhsNode = simplify(lhsNode)
-  const simplifiedRhsNode = simplify(rhsNode)
+  const simplifiedLhsNode = simplify(lhs)
+  const simplifiedRhsNode = simplify(rhs)
+
   const simplifiedLhs = simplifiedLhsNode.toString()
   const simplifiedRhs = simplifiedRhsNode.toString()
 
-  const allSteps = [
-    `Original equation: ${lhs} = ${rhs}`,
-    `Simplify LHS: ${simplifiedLhs}`,
-    `Simplify RHS: ${simplifiedRhs}`
-  ]
+  const allSteps = [`Original equation: ${lhs} = ${rhs}`, `Simplify LHS: ${lhs}`, `Simplify RHS: ${rhs}`]
+  // console.log('allSteps in siplify', allSteps)
 
-  return { allSteps, lhs, rhs }
+  return { allSteps }
 }
 
 async function solveEquation(equation: string) {
@@ -100,10 +124,13 @@ async function solveEquation(equation: string) {
 
   // // Step 2: Simplify the equation
   const { allSteps } = await simplifyEquation(lhs, rhs)
-  // console.log('simplified', simplified)
+
+  const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
+
+  const hasEmptyRightCoeff = rightSideCoeff == 0
 
   // // Step 3: Move all the variable terms to one side and all the constant terms to the other side
-  const transformed = transformEquation(allSteps, lhs, rhs)
+  const transformed = transformEquation(allSteps, lhs, rhs, hasEmptyRightCoeff)
 }
 
 const testHook = (context: HookContext) => {
