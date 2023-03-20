@@ -1,7 +1,23 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.html
 
 import { hooks as schemaHooks } from '@feathersjs/schema'
-import { atan2, chain, derivative, e, evaluate, log, pi, pow, round, sqrt, parse, simplify } from 'mathjs'
+import {
+  atan2,
+  chain,
+  divide,
+  derivative,
+  add,
+  multiply,
+  e,
+  evaluate,
+  log,
+  pi,
+  pow,
+  round,
+  sqrt,
+  parse,
+  simplify
+} from 'mathjs'
 
 import {
   calculateDataValidator,
@@ -21,8 +37,47 @@ import { calculatePath, calculateMethods } from './calculate.shared'
 export * from './calculate.class'
 export * from './calculate.schema'
 
+function getVariableCoefficient(side: any) {
+  // Helper function to get the coefficient of the variable term in a side of the equation
+  const variableMatch = side.match(/[+-]?[\d]*x/g)
+  const variable = variableMatch ? variableMatch[0] : 'x'
+  const coeffMatch = variable.match(/[+-]?[\d]*/g)
+  const coeff = coeffMatch ? coeffMatch[0] : '1'
+  return { coeff: Number(coeff), variable }
+}
+
+function transformSide(side: any, constantOnLeftSide: number, operator?: any) {
+  // Helper function to transform a side of the equation
+  const calcAdded = add(side, operator == '+' ? -constantOnLeftSide : constantOnLeftSide)
+  return { calcAdded }
+}
+
+function transformEquation(simplified: any, lhs: any, rhs: any) {
+  // Move all the variable terms to the left-hand side of the equation
+  // and all the constant terms to the right-hand side of the equation
+
+  const { coeff, variable } = getVariableCoefficient(lhs)
+  // @ts-ignore
+  const constantOperator = parse(lhs).op
+  // @ts-ignore
+  const constantOnLeftSide = parse(lhs).args[1].value
+  const { calcAdded } = transformSide(rhs, constantOnLeftSide, constantOperator)
+  const constantWithSign = constantOperator == '+' ? ' - ' + constantOnLeftSide : ' + ' + constantOnLeftSide
+
+  // Display the steps to solve the equation
+
+  const steps = [
+    `Move all variable terms to LHS: ${variable}`,
+    `Move all constant terms to RHS: ${rhs} ${constantWithSign}`,
+    `Add ${constantOnLeftSide} to both sides: ${lhs} ${constantWithSign} = ${rhs} ${constantWithSign} `,
+    `Simplify and divide both sides by the factor: ${variable} = ${calcAdded}`,
+    `Solution: x = ${divide(calcAdded, coeff)}`
+  ]
+  return steps
+}
+
 async function simplifyEquation(lhs: string, rhs: string) {
-  // Simplify the equation using Math.js
+  // Simplify the equation
   const lhsNode = parse(lhs)
   const rhsNode = parse(rhs)
   const simplifiedLhsNode = simplify(lhsNode)
@@ -36,21 +91,19 @@ async function simplifyEquation(lhs: string, rhs: string) {
     `Simplify RHS: ${simplifiedRhs}`
   ]
 
-  return allSteps
+  return { allSteps, lhs, rhs }
 }
 
 async function solveEquation(equation: string) {
   // Step 1: Parse the input equation string
   const [lhs, rhs] = equation.split('=').map((side) => side.trim())
 
-  console.log('lns', lhs)
-  console.log('rhs', rhs)
-
   // // Step 2: Simplify the equation
-  const simplified = await simplifyEquation(lhs, rhs)
-  console.log('simplified', simplified)
+  const { allSteps } = await simplifyEquation(lhs, rhs)
+  // console.log('simplified', simplified)
 
   // // Step 3: Move all the variable terms to one side and all the constant terms to the other side
+  const transformed = transformEquation(allSteps, lhs, rhs)
 }
 
 const testHook = (context: HookContext) => {
