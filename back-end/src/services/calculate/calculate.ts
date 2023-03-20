@@ -118,18 +118,73 @@ async function simplifyEquation(lhs: string, rhs: string) {
   return { allSteps }
 }
 
+const LHSNeedsDistrubition = (lhs: any, checkIfLHSHasBrackets: boolean) => {
+  if (!checkIfLHSHasBrackets) return lhs
+
+  const seperateExpr = lhs.split(')')
+  const firstPart = seperateExpr[0]
+  const secondPart = seperateExpr[1]
+  const getNumberFromFirstPart = Number(firstPart.split('(')[0])
+  const getExpressionInBrackets = firstPart.split('(')[1]
+
+  const getExpressionInBracketsParse = parse(getExpressionInBrackets)
+
+  // @ts-ignore
+  const getExpressionOperator = parse(getExpressionInBrackets).op
+
+  const operatorIsAddition = getExpressionOperator === '+'
+  const operatorIsSubtraction = getExpressionOperator === '-'
+
+  const operatorBeforeSign = operatorIsAddition ? ' + ' : operatorIsSubtraction ? ' - ' : ' '
+
+  const { coeff: coeffInBracket, variable } = getVariableCoefficient(getExpressionInBrackets)
+  // @ts-ignore
+  const constantNumberInBracket = parse(getExpressionInBrackets).args[1].value
+
+  const calcCoef = multiply(getNumberFromFirstPart, coeffInBracket)
+
+  const calcConstant = multiply(
+    getNumberFromFirstPart,
+    operatorIsAddition
+      ? +constantNumberInBracket
+      : operatorIsSubtraction
+      ? -constantNumberInBracket
+      : constantNumberInBracket
+  )
+  // @ts-ignore
+  const constantAdded = add(Number(calcConstant), Number(simplify(secondPart).value))
+
+  const distrubtedExpression = `${calcCoef}x ${operatorIsAddition && '+'}${calcConstant} ${secondPart}`
+
+  const newLHS = `${calcCoef}x ${operatorIsAddition && '+'} ${constantAdded}`
+  console.log('newLHS', newLHS)
+  return newLHS
+}
+
 async function solveEquation(equation: string) {
   // Step 1: Parse the input equation string
   const [lhs, rhs] = equation.split('=').map((side) => side.trim())
 
+  console.log('lhs simplified', simplify(lhs).toString())
+  const checkIfLHSHasBrackets = lhs.includes('(')
+
+  const updatedLHS = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets)
+
+  console.log('checkIfLHSHasBrackets', updatedLHS)
+
+  // console.log('parse(getExpressionInBrackets) ', parse(getExpressionInBrackets).toString())
+  // console.log('constantNumberInBracket', constantNumberInBracket)
+
+  // check if LHS containts parentesis for distrubution and multiplication
+
   // // Step 2: Simplify the equation
-  const { allSteps } = await simplifyEquation(lhs, rhs)
+  const { allSteps } = await simplifyEquation(updatedLHS, rhs)
 
   const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
 
   const hasEmptyRightCoeff = rightSideCoeff == 0
 
-  // // Step 3: Move all the variable terms to one side and all the constant terms to the other side
+  // // // Step 3: Move all the variable terms to one side and all the constant terms to the other side
   const transformed = transformEquation(allSteps, lhs, rhs, hasEmptyRightCoeff)
 }
 
