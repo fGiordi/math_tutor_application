@@ -58,6 +58,7 @@ function transformEquation(
   helpers: {
     checkIfLHSHasBrackets: boolean
     distributedSteps: string[]
+    simplifiedSteps: string[]
     rhsHasEmptyCoeff?: boolean
   }
 ) {
@@ -69,7 +70,7 @@ function transformEquation(
 
   const { coeff, variable } = getVariableCoefficient(lhs)
 
-  const { checkIfLHSHasBrackets, distributedSteps, rhsHasEmptyCoeff } = helpers
+  const { checkIfLHSHasBrackets, distributedSteps, rhsHasEmptyCoeff, simplifiedSteps } = helpers
 
   // @ts-ignore
   const constantOperatorLeft = parse(lhs).op
@@ -82,19 +83,15 @@ function transformEquation(
   // @ts-ignore
 
   const addLeftSide = add(leftSideCoeff, -rightSideCoeff)
-  console.log('constantOnLeftSide', constantOnLeftSide)
-  console.log('constantOnRightSide', constantOnRightSide)
 
   const constantWithSignLeft =
     constantOperatorLeft == '+' ? ' - ' + constantOnLeftSide : ' + ' + constantOnLeftSide
-
-  console.log('constantWithSignLeft', constantWithSignLeft)
 
   const addRightSide = add(
     constantOnRightSide,
     constantWithSignLeft.includes('-') ? -constantOnLeftSide : constantOnLeftSide
   )
-  console.log('addRightSide', addRightSide)
+  // console.log('addRightSide', addRightSide)
 
   const constantWithSignRight =
     constantOperatorRight == '+' ? ' - ' + constantOnRightSide : ' + ' + constantOnRightSide
@@ -118,24 +115,27 @@ function transformEquation(
         `Solution: x = ${divide(addRightSide, addLeftSide)}`
       ]
 
-  const stepsDistributed = [...distributedSteps, ...steps]
-  console.log('steps inside transform', steps)
+  const stepsDistributed = [...simplifiedSteps, ...distributedSteps, ...steps]
   console.log('stepsDistributed', stepsDistributed)
-  // return steps
+  return stepsDistributed
 }
 
-async function simplifyEquation(lhs: string, rhs: string) {
+async function simplifyEquation(lhs: string, rhs: string, originalEquation: string) {
   // Simplify the equation
-  const lhsNode = parse(lhs)
-  const rhsNode = parse(rhs)
+
+  const [simpLhs, simpRhs] = originalEquation.split('=').map((side) => side.trim())
+
   const simplifiedLhsNode = simplify(lhs)
   const simplifiedRhsNode = simplify(rhs)
 
   const simplifiedLhs = simplifiedLhsNode.toString()
   const simplifiedRhs = simplifiedRhsNode.toString()
 
-  const allSteps = [`Original equation: ${lhs} = ${rhs}`, `Simplify LHS: ${lhs}`, `Simplify RHS: ${rhs}`]
-  // console.log('allSteps in siplify', allSteps)
+  const allSteps = [
+    `Original equation: ${originalEquation}`,
+    `Simplify LHS: ${simpLhs}`,
+    `Simplify RHS: ${simpRhs}`
+  ]
 
   return { allSteps }
 }
@@ -213,7 +213,8 @@ async function solveEquation(equation: string) {
   // check if LHS containts parentesis for distrubution and multiplication
 
   // // Step 2: Simplify the equation
-  const { allSteps } = await simplifyEquation(updatedLHS, rhs)
+  const { allSteps } = await simplifyEquation(updatedLHS, rhs, equation)
+  console.log('allSteps', allSteps)
 
   const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
 
@@ -223,7 +224,8 @@ async function solveEquation(equation: string) {
   const transformed = transformEquation(updatedLHS, rhs, {
     checkIfLHSHasBrackets,
     distributedSteps,
-    rhsHasEmptyCoeff: hasEmptyRightCoeff
+    rhsHasEmptyCoeff: hasEmptyRightCoeff,
+    simplifiedSteps: allSteps
   })
 }
 
