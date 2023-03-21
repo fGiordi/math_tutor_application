@@ -46,13 +46,21 @@ function getVariableCoefficient(side: any) {
   return { coeff: Number(coeff), variable }
 }
 
-function transformSide(side: any, constantOnLeftSide: number, operator?: any) {
+function transformSide(side: number, constantOnLeftSide: number, operator?: string) {
   // Helper function to transform a side of the equation
   const calcAdded = add(side, operator == '+' ? -constantOnLeftSide : constantOnLeftSide)
   return { calcAdded }
 }
 
-function transformEquation(simplified: any, lhs: any, rhs: any, rhsHasEmptyCoeff?: boolean) {
+function transformEquation(
+  lhs: string,
+  rhs: string,
+  helpers: {
+    checkIfLHSHasBrackets: boolean
+    distributedSteps: string[]
+    rhsHasEmptyCoeff?: boolean
+  }
+) {
   // Move all the variable terms to the left-hand side of the equation
   // and all the constant terms to the right-hand side of the equation
 
@@ -60,6 +68,8 @@ function transformEquation(simplified: any, lhs: any, rhs: any, rhsHasEmptyCoeff
   const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
 
   const { coeff, variable } = getVariableCoefficient(lhs)
+
+  const { checkIfLHSHasBrackets, distributedSteps, rhsHasEmptyCoeff } = helpers
 
   // @ts-ignore
   const constantOperatorLeft = parse(lhs).op
@@ -72,10 +82,20 @@ function transformEquation(simplified: any, lhs: any, rhs: any, rhsHasEmptyCoeff
   // @ts-ignore
 
   const addLeftSide = add(leftSideCoeff, -rightSideCoeff)
-  const addRightSide = add(constantOnRightSide, -constantOnLeftSide)
+  console.log('constantOnLeftSide', constantOnLeftSide)
+  console.log('constantOnRightSide', constantOnRightSide)
 
   const constantWithSignLeft =
     constantOperatorLeft == '+' ? ' - ' + constantOnLeftSide : ' + ' + constantOnLeftSide
+
+  console.log('constantWithSignLeft', constantWithSignLeft)
+
+  const addRightSide = add(
+    constantOnRightSide,
+    constantWithSignLeft.includes('-') ? -constantOnLeftSide : constantOnLeftSide
+  )
+  console.log('addRightSide', addRightSide)
+
   const constantWithSignRight =
     constantOperatorRight == '+' ? ' - ' + constantOnRightSide : ' + ' + constantOnRightSide
 
@@ -98,7 +118,9 @@ function transformEquation(simplified: any, lhs: any, rhs: any, rhsHasEmptyCoeff
         `Solution: x = ${divide(addRightSide, addLeftSide)}`
       ]
 
+  const stepsDistributed = [...distributedSteps, ...steps]
   console.log('steps inside transform', steps)
+  console.log('stepsDistributed', stepsDistributed)
   // return steps
 }
 
@@ -118,8 +140,12 @@ async function simplifyEquation(lhs: string, rhs: string) {
   return { allSteps }
 }
 
-const LHSNeedsDistrubition = (lhs: any, checkIfLHSHasBrackets: boolean) => {
-  if (!checkIfLHSHasBrackets) return lhs
+const LHSNeedsDistrubition = (lhs: string, checkIfLHSHasBrackets: boolean) => {
+  if (!checkIfLHSHasBrackets)
+    return {
+      updatedLHS: lhs,
+      distributedSteps: []
+    }
 
   const seperateExpr = lhs.split(')')
   const firstPart = seperateExpr[0]
@@ -156,13 +182,21 @@ const LHSNeedsDistrubition = (lhs: any, checkIfLHSHasBrackets: boolean) => {
   const constantAdded = add(Number(calcConstant), Number(simplify(secondPart).value))
   console.log('constantAdded', constantAdded)
 
-  const distrubtedExpression = `${calcCoef}x ${operatorIsAddition && '+'}${calcConstant} ${secondPart}`
+  const distrubtedExpression = `${calcCoef}x ${
+    operatorIsSubtraction ? '' : operatorIsAddition === true && '+'
+  }${calcConstant} ${secondPart}`
 
   const newLHS = `${calcCoef}x ${
     operatorIsSubtraction ? '' : operatorIsAddition === true && '+'
   } ${constantAdded}`
   console.log('newLHS', newLHS)
-  return newLHS
+
+  const distributedSteps = [
+    `Distribute LHS: ${simplify(lhs).toString()}`,
+    `Add Numbers on LHS: ${distrubtedExpression}`,
+    `Simplify liked terms on LHS: ${newLHS}`
+  ]
+  return { updatedLHS: newLHS, distributedSteps }
 }
 
 async function solveEquation(equation: string) {
@@ -172,12 +206,9 @@ async function solveEquation(equation: string) {
   console.log('lhs simplified', simplify(lhs).toString())
   const checkIfLHSHasBrackets = lhs.includes('(')
 
-  const updatedLHS = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets)
+  const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets)
 
   console.log('checkIfLHSHasBrackets', updatedLHS)
-
-  // console.log('parse(getExpressionInBrackets) ', parse(getExpressionInBrackets).toString())
-  // console.log('constantNumberInBracket', constantNumberInBracket)
 
   // check if LHS containts parentesis for distrubution and multiplication
 
@@ -189,7 +220,11 @@ async function solveEquation(equation: string) {
   const hasEmptyRightCoeff = rightSideCoeff == 0
 
   // // // Step 3: Move all the variable terms to one side and all the constant terms to the other side
-  const transformed = transformEquation(allSteps, lhs, rhs, hasEmptyRightCoeff)
+  const transformed = transformEquation(updatedLHS, rhs, {
+    checkIfLHSHasBrackets,
+    distributedSteps,
+    rhsHasEmptyCoeff: hasEmptyRightCoeff
+  })
 }
 
 const testHook = (context: HookContext) => {
