@@ -151,12 +151,16 @@ const LHSNeedsDistrubition = (lhs: any, checkIfLHSHasBrackets: boolean) => {
       ? -constantNumberInBracket
       : constantNumberInBracket
   )
+  console.log('calcConstant', calcConstant)
   // @ts-ignore
   const constantAdded = add(Number(calcConstant), Number(simplify(secondPart).value))
+  console.log('constantAdded', constantAdded)
 
   const distrubtedExpression = `${calcCoef}x ${operatorIsAddition && '+'}${calcConstant} ${secondPart}`
 
-  const newLHS = `${calcCoef}x ${operatorIsAddition && '+'} ${constantAdded}`
+  const newLHS = `${calcCoef}x ${
+    operatorIsSubtraction ? '' : operatorIsAddition === true && '+'
+  } ${constantAdded}`
   console.log('newLHS', newLHS)
   return newLHS
 }
