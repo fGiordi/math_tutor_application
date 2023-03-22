@@ -82,19 +82,32 @@ function transformEquation(
   const constantOnRightSide = !rhsHasEmptyCoeff ? parse(rhs).args[0].value : parse(rhs).value
   // @ts-ignore
 
-  const addLeftSide = add(leftSideCoeff, -rightSideCoeff)
+  // @ts-ignore
+  const coefOperatorSignRight = parse(rhs).op
+
+  const addLeftSide = add(leftSideCoeff, multiply(-rightSideCoeff, coefOperatorSignRight === '-' ? -1 : 1))
+  console.log('addLeftSide', addLeftSide)
 
   const constantWithSignLeft =
     constantOperatorLeft == '+' ? ' - ' + constantOnLeftSide : ' + ' + constantOnLeftSide
+
+  console.log('constantWithSignLeft', constantWithSignLeft)
+  console.log('rightSideVariable', rightSideVariable)
 
   const addRightSide = add(
     constantOnRightSide,
     constantWithSignLeft.includes('-') ? -constantOnLeftSide : constantOnLeftSide
   )
-  // console.log('addRightSide', addRightSide)
+  console.log('addRightSide', addRightSide)
 
   const constantWithSignRight =
     constantOperatorRight == '+' ? ' - ' + constantOnRightSide : ' + ' + constantOnRightSide
+
+  // @ts-ignore
+
+  const coeffSignRight = coefOperatorSignRight == '+' ? ' - ' + rightSideVariable : ' + ' + rightSideVariable
+
+  console.log('coeffSignRight', coeffSignRight)
 
   // Display the steps to solve the equation
 
@@ -107,10 +120,10 @@ function transformEquation(
         `Solution: x = ${divide(addRightSide, leftSideCoeff)}`
       ]
     : [
-        `Move all variable terms to LHS: ${leftSideVariable} - ( ${rightSideVariable} )  `,
-        `Move all constant terms to RHS: ${constantOnRightSide} - ( ${constantOnLeftSide} ) `,
-        `Add the liked terms on LHS: 1. ${leftSideVariable} - ( ${rightSideVariable} ) = ${addLeftSide}x`,
-        `Add the liked terms on RHS: 2: ${constantOnRightSide} - ( ${constantOnLeftSide} ) = ${addRightSide}`,
+        `Move all variable terms to LHS: ${leftSideVariable} ${coeffSignRight}`,
+        `Move all constant terms to RHS: ${constantOnRightSide}   ${constantWithSignLeft}  `,
+        `Add the liked terms on LHS: 1. ${leftSideVariable}   ${coeffSignRight}  = ${addLeftSide}x`,
+        `Add the liked terms on RHS: 2: ${constantOnRightSide}   ${constantWithSignLeft}  = ${addRightSide}`,
         `Simplify and divide both sides by the factor: ${addLeftSide}x = ${addRightSide}`,
         `Solution: x = ${divide(addRightSide, addLeftSide)}`
       ]
@@ -127,9 +140,12 @@ async function simplifyEquation(lhs: string, rhs: string, originalEquation: stri
 
   const simplifiedLhsNode = simplify(lhs)
   const simplifiedRhsNode = simplify(rhs)
+  console.log('simplifiedRhsNode', simplifiedRhsNode)
 
   const simplifiedLhs = simplifiedLhsNode.toString()
   const simplifiedRhs = simplifiedRhsNode.toString()
+
+  console.log('simplifiedRhs', parse(rhs).toString())
 
   const allSteps = [
     `Original equation: ${originalEquation}`,
