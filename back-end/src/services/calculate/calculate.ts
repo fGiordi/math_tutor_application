@@ -37,19 +37,13 @@ import { calculatePath, calculateMethods } from './calculate.shared'
 export * from './calculate.class'
 export * from './calculate.schema'
 
-function getVariableCoefficient(side: any) {
+function getVariableCoefficient(side: string) {
   // Helper function to get the coefficient of the variable term in a side of the equation
   const variableMatch = side.match(/[+-]?[\d]*x/g)
   const variable = variableMatch ? variableMatch[0] : 'x'
   const coeffMatch = variable.match(/[+-]?[\d]*/g)
   const coeff = coeffMatch ? coeffMatch[0] : '1'
   return { coeff: Number(coeff), variable }
-}
-
-function transformSide(side: number, constantOnLeftSide: number, operator?: string) {
-  // Helper function to transform a side of the equation
-  const calcAdded = add(side, operator == '+' ? -constantOnLeftSide : constantOnLeftSide)
-  return { calcAdded }
 }
 
 function transformEquation(
@@ -84,18 +78,27 @@ function transformEquation(
 
   // @ts-ignore
   const coefOperatorSignRight = parse(rhs).op
+  console.log('coefOperatorSignRight', coefOperatorSignRight)
 
   const addLeftSide = add(leftSideCoeff, multiply(-rightSideCoeff, coefOperatorSignRight === '-' ? -1 : 1))
   console.log('addLeftSide', addLeftSide)
+  console.log('rhsHasEmptyCoeff', rhsHasEmptyCoeff)
 
   const constantWithSignLeft =
     constantOperatorLeft == '+' ? ' - ' + constantOnLeftSide : ' + ' + constantOnLeftSide
-
   console.log('constantWithSignLeft', constantWithSignLeft)
-  console.log('rightSideVariable', rightSideVariable)
+  console.log('constantOnLeftSide', constantOnLeftSide)
+
+  console.log('constantOnRightSide', constantOnRightSide)
+  // @ts-ignore
+  console.log('parse(rhs).value', parse(rhs))
+
+  // @ts-ignore
+  const constantRightSideCheck = constantOnRightSide ? constantOnRightSide : parse(rhs).args[1].value
 
   const addRightSide = add(
-    constantOnRightSide,
+    // @ts-ignore
+    constantRightSideCheck,
     constantWithSignLeft.includes('-') ? -constantOnLeftSide : constantOnLeftSide
   )
   console.log('addRightSide', addRightSide)
@@ -104,8 +107,11 @@ function transformEquation(
     constantOperatorRight == '+' ? ' - ' + constantOnRightSide : ' + ' + constantOnRightSide
 
   // @ts-ignore
+  const signsChangeConditions = ['+', '*']
 
-  const coeffSignRight = coefOperatorSignRight == '+' ? ' - ' + rightSideVariable : ' + ' + rightSideVariable
+  const coeffSignRight = signsChangeConditions.includes(coefOperatorSignRight)
+    ? ' - ' + rightSideVariable
+    : ' + ' + rightSideVariable
 
   console.log('coeffSignRight', coeffSignRight)
 
@@ -121,9 +127,9 @@ function transformEquation(
       ]
     : [
         `Move all variable terms to LHS: ${leftSideVariable} ${coeffSignRight}`,
-        `Move all constant terms to RHS: ${constantOnRightSide}   ${constantWithSignLeft}  `,
+        `Move all constant terms to RHS: ${constantRightSideCheck}   ${constantWithSignLeft}  `,
         `Add the liked terms on LHS: 1. ${leftSideVariable}   ${coeffSignRight}  = ${addLeftSide}x`,
-        `Add the liked terms on RHS: 2: ${constantOnRightSide}   ${constantWithSignLeft}  = ${addRightSide}`,
+        `Add the liked terms on RHS: 2: ${constantRightSideCheck}   ${constantWithSignLeft}  = ${addRightSide}`,
         `Simplify and divide both sides by the factor: ${addLeftSide}x = ${addRightSide}`,
         `Solution: x = ${divide(addRightSide, addLeftSide)}`
       ]
@@ -219,18 +225,14 @@ async function solveEquation(equation: string) {
   // Step 1: Parse the input equation string
   const [lhs, rhs] = equation.split('=').map((side) => side.trim())
 
-  console.log('lhs simplified', simplify(lhs).toString())
   const checkIfLHSHasBrackets = lhs.includes('(')
 
   const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets)
-
-  console.log('checkIfLHSHasBrackets', updatedLHS)
 
   // check if LHS containts parentesis for distrubution and multiplication
 
   // // Step 2: Simplify the equation
   const { allSteps } = await simplifyEquation(updatedLHS, rhs, equation)
-  console.log('allSteps', allSteps)
 
   const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
 
@@ -243,11 +245,15 @@ async function solveEquation(equation: string) {
     rhsHasEmptyCoeff: hasEmptyRightCoeff,
     simplifiedSteps: allSteps
   })
+  return transformed
 }
 
-const testHook = (context: HookContext) => {
+const testHook = async (context: HookContext) => {
   console.log('after data', context.data)
-  solveEquation(context.data.equation)
+  const steps = await solveEquation(context.data.equation)
+  context.result = {
+    steps
+  }
   return context
 }
 
