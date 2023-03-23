@@ -2,6 +2,7 @@
 import { HookContext as FeathersHookContext, NextFunction } from '@feathersjs/feathers'
 import { Application as FeathersApplication } from '@feathersjs/koa'
 import { ApplicationConfiguration } from './configuration'
+import { CalculateService } from './services/calculate/calculate.class'
 
 export { NextFunction }
 
