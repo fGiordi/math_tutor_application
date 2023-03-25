@@ -4,6 +4,7 @@ import { app } from '../../../src/app'
 import { Application } from '@feathersjs/feathers'
 import { ServiceTypes } from '../../../src/declarations'
 import request from 'supertest'
+import { ERROR_INVALID_MESSAGE } from '../../../src/services/calculate/hooks'
 
 describe('Calculate Service Tests', () => {
   it('registered the calculate service', () => {
@@ -12,7 +13,6 @@ describe('Calculate Service Tests', () => {
     assert.ok(service, 'Registered the service')
   })
 
-  it('simplifies a valid algebraic expression', async () => {})
   //
   it('Solve for 2x + 13 = 5 should return -4', async () => {
     const expression = '2x + 13 = 5'
@@ -127,5 +127,18 @@ describe('Calculate Service Tests', () => {
       'Simplify and divide both sides by the factor: 12x = 24',
       'Solution: x = 2'
     ])
+  })
+
+  it('returns an error for an invalid algebraic expression', async () => {
+    const expression = '10x + 6x + 4x'
+    try {
+      const service = app.service('calculate')
+
+      await service.create({ equation: expression })
+      assert.fail('Expected service to throw an error')
+    } catch (error: unknown) {
+      // @ts-ignore
+      assert.strictEqual(error.message, ERROR_INVALID_MESSAGE)
+    }
   })
 })

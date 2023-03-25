@@ -13,6 +13,8 @@ export const logError = async (context: HookContext, next: NextFunction) => {
       logger.error('Data: %O', error.data)
     }
 
+    console.log('we found error', error)
+
     throw error
   }
 }

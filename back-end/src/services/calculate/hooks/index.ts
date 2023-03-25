@@ -1,6 +1,8 @@
 import type { HookContext } from '../../../declarations'
 import { divide, add, multiply, parse, simplify, round } from 'mathjs'
 
+export const ERROR_INVALID_MESSAGE = `Please ensure the format is correct: See examples "7x - 2 = 10x" or 2(4x + 3) + 6 = 2x + 2`
+
 const getVariableCoefficient = (side: string) => {
   // Helper function to get the coefficient of the variable term in a side of the equation
   const variableMatch = side.match(/[+-]?[\d]*x/g)
@@ -188,38 +190,44 @@ const LHSNeedsDistrubition = (lhs: string, checkIfLHSHasBrackets: boolean) => {
 }
 
 async function solveEquation(equation: string) {
-  // Step 1: Parse the input equation string
-  const [lhs, rhs] = equation.split('=').map((side) => side.trim())
+  try {
+    // Step 1: Parse the input equation string
+    const [lhs, rhs] = equation.split('=').map((side) => side.trim())
 
-  // check if distribution is required
-  const checkIfLHSHasBrackets = lhs.includes('(')
+    // check if distribution is required
+    const checkIfLHSHasBrackets = lhs.includes('(')
 
-  // Step 2: handle distribution if need be
-  const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets)
+    // Step 2: handle distribution if need be
+    const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets)
 
-  // check if LHS containts parentesis for distrubution and multiplication
+    // check if LHS containts parentesis for distrubution and multiplication
 
-  // // Step 2: Simplify the equation
-  const { allSteps: preSteps } = await breakDownEquation(updatedLHS, rhs, equation)
+    // // Step 2: Simplify the equation
+    const { allSteps: preSteps } = await breakDownEquation(updatedLHS, rhs, equation)
 
-  const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
+    const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
 
-  const hasEmptyRightCoeff = rightSideCoeff == 0
+    const hasEmptyRightCoeff = rightSideCoeff == 0
 
-  // // // Step 3: Move all the variable terms to one side and all the constant terms to the other side
-  const transformed = transformEquation(updatedLHS, rhs, {
-    checkIfLHSHasBrackets,
-    distributedSteps,
-    rhsHasEmptyCoeff: hasEmptyRightCoeff,
-    simplifiedSteps: preSteps
-  })
-  return transformed
+    // // // Step 3: Move all the variable terms to one side and all the constant terms to the other side
+    const transformed = transformEquation(updatedLHS, rhs, {
+      checkIfLHSHasBrackets,
+      distributedSteps,
+      rhsHasEmptyCoeff: hasEmptyRightCoeff,
+      simplifiedSteps: preSteps
+    })
+    return transformed
+  } catch (error: unknown) {
+    console.log('error on solve equation', error)
+    // @ts-ignore
+    throw new Error(ERROR_INVALID_MESSAGE)
+  }
 }
 
 export const handleEquationStep = async (context: HookContext) => {
-  const steps = await solveEquation(context.data.equation)
+  const result = await solveEquation(context.data.equation)
   context.result = {
-    result: steps
+    result
   }
   return context
 }
