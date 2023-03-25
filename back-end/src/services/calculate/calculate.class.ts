@@ -24,7 +24,11 @@ export class CalculateService<ServiceParams extends CalculateParams = CalculateP
 
   async get(id: Id, _params?: ServiceParams): Promise<Calculate> {
     return {
-      equation: `A new message with ID: ${id}!`
+      equation: `A new message with ID: ${id}!`,
+      result: {
+        solution: '',
+        steps: []
+      }
     }
   }
 
@@ -39,7 +43,11 @@ export class CalculateService<ServiceParams extends CalculateParams = CalculateP
     }
 
     return {
-      ...data
+      ...data,
+      result: {
+        solution: '',
+        steps: []
+      }
     }
   }
 
@@ -47,6 +55,10 @@ export class CalculateService<ServiceParams extends CalculateParams = CalculateP
   async update(id: NullableId, data: CalculateData, _params?: ServiceParams): Promise<Calculate> {
     return {
       // equation: 0,
+      result: {
+        solution: '',
+        steps: []
+      },
       ...data
     }
   }
@@ -55,6 +67,10 @@ export class CalculateService<ServiceParams extends CalculateParams = CalculateP
     return {
       // id: 0,
       equation: `Fallback for ${id}`,
+      result: {
+        solution: '',
+        steps: []
+      },
       ...data
     }
   }
@@ -62,7 +78,11 @@ export class CalculateService<ServiceParams extends CalculateParams = CalculateP
   async remove(id: NullableId, _params?: ServiceParams): Promise<Calculate> {
     return {
       // id: 0,
-      equation: 'removed'
+      equation: 'removed',
+      result: {
+        solution: '',
+        steps: []
+      }
     }
   }
 }

@@ -9,7 +9,11 @@ import { dataValidator, queryValidator } from '../../validators'
 // Main data model schema
 export const calculateSchema = Type.Object(
   {
-    equation: Type.String()
+    equation: Type.String(),
+    result: Type.Object({
+      steps: Type.Object({}),
+      solution: Type.String()
+    })
   },
   { $id: 'Calculate', additionalProperties: false }
 )

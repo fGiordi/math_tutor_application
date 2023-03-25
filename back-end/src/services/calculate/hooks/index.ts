@@ -10,12 +10,6 @@ const getVariableCoefficient = (side: string) => {
   return { coeff: Number(coeff), variable }
 }
 
-interface ParsedSide {
-  args: {
-    value: string
-  }
-}
-
 const transformEquation = (
   lhs: string,
   rhs: string,
@@ -57,12 +51,10 @@ const transformEquation = (
   // @ts-ignore
   const constantRightSideCheck = constantOnRightSide ? constantOnRightSide : parse(rhs).args[1].value
   // @ts-ignore
-  console.log('parse', parse(rhs))
   // @ts-ignore
   const rhsWithCoefOnlyName = parse(rhs).args ? parse(rhs).args[1].name : parse(rhs).value
 
   const rhsWithCoefOnly = rhsWithCoefOnlyName === 'x'
-  console.log('rhsWithCoefOnly', rhsWithCoefOnly)
 
   const addRightSide = add(
     // @ts-ignore
@@ -106,7 +98,8 @@ const transformEquation = (
       ]
 
   const stepsDistributed = [...simplifiedSteps, ...distributedSteps, ...steps]
-  return stepsDistributed
+  const solution = stepsDistributed[stepsDistributed.length - 1].split(': ')[1].trim()
+  return { steps: stepsDistributed, solution }
 }
 
 async function simplifyEquation(lhs: string, rhs: string, originalEquation: string) {
@@ -116,12 +109,9 @@ async function simplifyEquation(lhs: string, rhs: string, originalEquation: stri
 
   const simplifiedLhsNode = simplify(lhs)
   const simplifiedRhsNode = parse(rhs)
-  console.log('simplifiedRhsNode', simplifiedRhsNode)
 
   const simplifiedLhs = simplifiedLhsNode.toString()
   const simplifiedRhs = simplifiedRhsNode.toString()
-
-  console.log('simplifiedRhs', parse(rhs).toString())
 
   const allSteps = [
     `Original equation: ${originalEquation}`,
@@ -169,10 +159,8 @@ const LHSNeedsDistrubition = (lhs: string, checkIfLHSHasBrackets: boolean) => {
       ? -constantNumberInBracket
       : constantNumberInBracket
   )
-  console.log('calcConstant', calcConstant)
   // @ts-ignore
   const constantAdded = add(Number(calcConstant), Number(simplify(secondPart).value))
-  console.log('constantAdded', constantAdded)
 
   const distrubtedExpression = `${calcCoef}x ${
     operatorIsSubtraction ? '' : operatorIsAddition === true && '+'
@@ -221,7 +209,7 @@ async function solveEquation(equation: string) {
 export const handleEquationStep = async (context: HookContext) => {
   const steps = await solveEquation(context.data.equation)
   context.result = {
-    steps
+    result: steps
   }
   return context
 }
