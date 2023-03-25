@@ -1,5 +1,5 @@
 import type { HookContext } from '../../../declarations'
-import { divide, add, multiply, parse, simplify } from 'mathjs'
+import { divide, add, multiply, parse, simplify, round } from 'mathjs'
 
 const getVariableCoefficient = (side: string) => {
   // Helper function to get the coefficient of the variable term in a side of the equation
@@ -80,7 +80,7 @@ const transformEquation = (
         `Move all constant terms to RHS: ${rhs} ${constantWithSignLeft}`,
         `Add ${constantOnLeftSide} to both sides: ${lhs} ${constantWithSignLeft} = ${rhs} ${constantWithSignLeft} `,
         `Simplify and divide both sides by the factor: ${leftSideVariable} = ${addRightSide}`,
-        `Solution: x = ${divide(addRightSide, leftSideCoeff)}`
+        `Solution: x = ${round(Number(divide(addRightSide, leftSideCoeff)), 3)}`
       ]
     : [
         `Move all variable terms to LHS: ${leftSideVariable} ${coeffSignRight}`,
@@ -98,15 +98,21 @@ const transformEquation = (
         } `,
         `Solution: x = ${
           rhsWithCoefOnly
-            ? divide(
-                constantWithSignLeft.includes('-') ? -constantOnLeftSide : constantOnLeftSide,
-                addLeftSide
+            ? round(
+                Number(
+                  divide(
+                    constantWithSignLeft.includes('-') ? -constantOnLeftSide : constantOnLeftSide,
+                    addLeftSide
+                  )
+                ),
+                3
               )
-            : divide(addRightSide, addLeftSide)
+            : round(Number(divide(addRightSide, addLeftSide)), 3)
         }`
       ]
 
   const stepsDistributed = [...simplifiedSteps, ...distributedSteps, ...steps]
+  // strip solution from steps
   const solution = stepsDistributed[stepsDistributed.length - 1].split(': ')[1].trim()
   return { steps: stepsDistributed, solution }
 }
