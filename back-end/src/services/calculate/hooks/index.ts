@@ -10,6 +10,12 @@ const getVariableCoefficient = (side: string) => {
   return { coeff: Number(coeff), variable }
 }
 
+interface ParsedSide {
+  args: {
+    value: string
+  }
+}
+
 const transformEquation = (
   lhs: string,
   rhs: string,
@@ -41,7 +47,7 @@ const transformEquation = (
   // @ts-ignore
 
   // @ts-ignore
-  const coefOperatorSignRight = parse(rhs).op
+  const coefOperatorSignRight = simplify(rhs).op
 
   const addLeftSide = add(leftSideCoeff, multiply(-rightSideCoeff, coefOperatorSignRight === '-' ? -1 : 1))
 
@@ -50,6 +56,10 @@ const transformEquation = (
 
   // @ts-ignore
   const constantRightSideCheck = constantOnRightSide ? constantOnRightSide : parse(rhs).args[1].value
+
+  // @ts-ignore
+  const rhsWithCoefOnly = String(simplify(rhs).args[1].name) === 'x'
+  console.log('rhsWithCoefOnly', rhsWithCoefOnly)
 
   const addRightSide = add(
     // @ts-ignore
@@ -79,10 +89,16 @@ const transformEquation = (
       ]
     : [
         `Move all variable terms to LHS: ${leftSideVariable} ${coeffSignRight}`,
-        `Move all constant terms to RHS: ${constantRightSideCheck}   ${constantWithSignLeft}  `,
-        `Add the liked terms on LHS: 1. ${leftSideVariable}   ${coeffSignRight}  = ${addLeftSide}x`,
-        `Add the liked terms on RHS: 2: ${constantRightSideCheck}   ${constantWithSignLeft}  = ${addRightSide}`,
-        `Simplify and divide both sides by the factor: ${addLeftSide}x = ${addRightSide}`,
+        `Move all constant terms to RHS: ${constantRightSideCheck}  ${constantWithSignLeft}  `,
+        `Add the liked terms on LHS: 1. ${leftSideVariable}  ${coeffSignRight}  = ${addLeftSide}x`,
+        `Add the liked terms on RHS: 2: ${
+          rhsWithCoefOnly
+            ? `${constantWithSignLeft}`
+            : `${constantRightSideCheck} ${constantWithSignLeft}  = ${addRightSide}`
+        }  `,
+        `Simplify and divide both sides by the factor: ${
+          rhsWithCoefOnly ? `${addLeftSide}x = ${constantWithSignLeft}` : `${addLeftSide}x = ${addRightSide}`
+        } `,
         `Solution: x = ${divide(addRightSide, addLeftSide)}`
       ]
 
@@ -96,7 +112,7 @@ async function simplifyEquation(lhs: string, rhs: string, originalEquation: stri
   const [simpLhs, simpRhs] = originalEquation.split('=').map((side) => side.trim())
 
   const simplifiedLhsNode = simplify(lhs)
-  const simplifiedRhsNode = simplify(rhs)
+  const simplifiedRhsNode = parse(rhs)
   console.log('simplifiedRhsNode', simplifiedRhsNode)
 
   const simplifiedLhs = simplifiedLhsNode.toString()
