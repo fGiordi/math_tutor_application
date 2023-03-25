@@ -15,7 +15,6 @@ This is the backend for the Maths equation tutor. We are required to write an ap
 3. Start your app
 
    ```
-   npm run compile # Compile TypeScript source
    npm start
    ```
 

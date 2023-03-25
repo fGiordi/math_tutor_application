@@ -111,8 +111,8 @@ const transformEquation = (
   return { steps: stepsDistributed, solution }
 }
 
-async function simplifyEquation(lhs: string, rhs: string, originalEquation: string) {
-  // Simplify the equation
+async function breakDownEquation(lhs: string, rhs: string, originalEquation: string) {
+  // Simplify the equation in pre steps
 
   const [simpLhs, simpRhs] = originalEquation.split('=').map((side) => side.trim())
 
@@ -188,12 +188,13 @@ async function solveEquation(equation: string) {
   // check if distribution is required
   const checkIfLHSHasBrackets = lhs.includes('(')
 
+  // Step 2: handle distribution if need be
   const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets)
 
   // check if LHS containts parentesis for distrubution and multiplication
 
   // // Step 2: Simplify the equation
-  const { allSteps: preSteps } = await simplifyEquation(updatedLHS, rhs, equation)
+  const { allSteps: preSteps } = await breakDownEquation(updatedLHS, rhs, equation)
 
   const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
 
