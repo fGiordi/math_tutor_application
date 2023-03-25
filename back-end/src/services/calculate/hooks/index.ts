@@ -56,9 +56,12 @@ const transformEquation = (
 
   // @ts-ignore
   const constantRightSideCheck = constantOnRightSide ? constantOnRightSide : parse(rhs).args[1].value
-
   // @ts-ignore
-  const rhsWithCoefOnly = String(simplify(rhs).args[1].name) === 'x'
+  console.log('parse', parse(rhs))
+  // @ts-ignore
+  const rhsWithCoefOnlyName = parse(rhs).args ? parse(rhs).args[1].name : parse(rhs).value
+
+  const rhsWithCoefOnly = rhsWithCoefOnlyName === 'x'
   console.log('rhsWithCoefOnly', rhsWithCoefOnly)
 
   const addRightSide = add(
