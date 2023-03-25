@@ -62,6 +62,9 @@ const transformEquation = (
     constantWithSignLeft.includes('-') ? -constantOnLeftSide : constantOnLeftSide
   )
 
+  console.log('constantWithSignLeft', constantWithSignLeft)
+  console.log('constantRightSideCheck', constantRightSideCheck)
+
   const constantWithSignRight =
     constantOperatorRight == '+' ? ' - ' + constantOnRightSide : ' + ' + constantOnRightSide
 
@@ -73,6 +76,10 @@ const transformEquation = (
     : ' + ' + rightSideVariable
 
   // Display the steps to solve the equation
+  console.log('addLeftSide', addLeftSide)
+  console.log('addRightSide', addRightSide)
+  console.log('constantOnLeftSide', constantOnLeftSide)
+  console.log('divide(constantOnLeftSide, addLeftSide)', divide(constantOnLeftSide, addLeftSide))
 
   const steps = rhsHasEmptyCoeff
     ? [
@@ -84,7 +91,9 @@ const transformEquation = (
       ]
     : [
         `Move all variable terms to LHS: ${leftSideVariable} ${coeffSignRight}`,
-        `Move all constant terms to RHS: ${constantRightSideCheck}  ${constantWithSignLeft}  `,
+        `Move all constant terms to RHS: ${
+          rhsWithCoefOnly ? `${constantWithSignLeft}` : `${constantRightSideCheck}  ${constantWithSignLeft}`
+        }   `,
         `Add the liked terms on LHS: 1. ${leftSideVariable}  ${coeffSignRight}  = ${addLeftSide}x`,
         `Add the liked terms on RHS: 2: ${
           rhsWithCoefOnly
@@ -94,7 +103,14 @@ const transformEquation = (
         `Simplify and divide both sides by the factor: ${
           rhsWithCoefOnly ? `${addLeftSide}x = ${constantWithSignLeft}` : `${addLeftSide}x = ${addRightSide}`
         } `,
-        `Solution: x = ${divide(addRightSide, addLeftSide)}`
+        `Solution: x = ${
+          rhsWithCoefOnly
+            ? divide(
+                constantWithSignLeft.includes('-') ? -constantOnLeftSide : constantOnLeftSide,
+                addLeftSide
+              )
+            : divide(addRightSide, addLeftSide)
+        }`
       ]
 
   const stepsDistributed = [...simplifiedSteps, ...distributedSteps, ...steps]
@@ -169,7 +185,6 @@ const LHSNeedsDistrubition = (lhs: string, checkIfLHSHasBrackets: boolean) => {
   const newLHS = `${calcCoef}x ${
     operatorIsSubtraction ? '' : operatorIsAddition === true && '+'
   } ${constantAdded}`
-  console.log('newLHS', newLHS)
 
   const distributedSteps = [
     `Distribute LHS: ${simplify(lhs).toString()}`,
