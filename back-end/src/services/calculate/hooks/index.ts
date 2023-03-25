@@ -62,9 +62,6 @@ const transformEquation = (
     constantWithSignLeft.includes('-') ? -constantOnLeftSide : constantOnLeftSide
   )
 
-  console.log('constantWithSignLeft', constantWithSignLeft)
-  console.log('constantRightSideCheck', constantRightSideCheck)
-
   const constantWithSignRight =
     constantOperatorRight == '+' ? ' - ' + constantOnRightSide : ' + ' + constantOnRightSide
 
@@ -76,10 +73,6 @@ const transformEquation = (
     : ' + ' + rightSideVariable
 
   // Display the steps to solve the equation
-  console.log('addLeftSide', addLeftSide)
-  console.log('addRightSide', addRightSide)
-  console.log('constantOnLeftSide', constantOnLeftSide)
-  console.log('divide(constantOnLeftSide, addLeftSide)', divide(constantOnLeftSide, addLeftSide))
 
   const steps = rhsHasEmptyCoeff
     ? [
@@ -122,12 +115,6 @@ async function simplifyEquation(lhs: string, rhs: string, originalEquation: stri
   // Simplify the equation
 
   const [simpLhs, simpRhs] = originalEquation.split('=').map((side) => side.trim())
-
-  const simplifiedLhsNode = simplify(lhs)
-  const simplifiedRhsNode = parse(rhs)
-
-  const simplifiedLhs = simplifiedLhsNode.toString()
-  const simplifiedRhs = simplifiedRhsNode.toString()
 
   const allSteps = [
     `Original equation: ${originalEquation}`,
@@ -198,6 +185,7 @@ async function solveEquation(equation: string) {
   // Step 1: Parse the input equation string
   const [lhs, rhs] = equation.split('=').map((side) => side.trim())
 
+  // check if distribution is required
   const checkIfLHSHasBrackets = lhs.includes('(')
 
   const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets)
@@ -205,7 +193,7 @@ async function solveEquation(equation: string) {
   // check if LHS containts parentesis for distrubution and multiplication
 
   // // Step 2: Simplify the equation
-  const { allSteps } = await simplifyEquation(updatedLHS, rhs, equation)
+  const { allSteps: preSteps } = await simplifyEquation(updatedLHS, rhs, equation)
 
   const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
 
@@ -216,7 +204,7 @@ async function solveEquation(equation: string) {
     checkIfLHSHasBrackets,
     distributedSteps,
     rhsHasEmptyCoeff: hasEmptyRightCoeff,
-    simplifiedSteps: allSteps
+    simplifiedSteps: preSteps
   })
   return transformed
 }
