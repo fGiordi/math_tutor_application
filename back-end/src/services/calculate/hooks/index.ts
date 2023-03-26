@@ -27,7 +27,7 @@ async function solveEquation(equation: string) {
 
     const bothExist = lhsLetter && rhsLetter
 
-    if (bothExist && lhsLetter !== rhsLetter) {
+    if (bothExist && lhsLetter !== rhsLetter && rightSideCoeff !== 0) {
       throw new Error('Variables are not the same. Please keep it consistent on both sides')
     }
 
@@ -64,7 +64,8 @@ async function solveEquation(equation: string) {
 
     return transformed
   } catch (error: unknown) {
-    console.log('error on solve equation', error)
+    // @ts-ignore
+    console.log('error on solve equation', error.message)
     // @ts-ignore
     throw new Error(ERROR_INVALID_MESSAGE)
   }

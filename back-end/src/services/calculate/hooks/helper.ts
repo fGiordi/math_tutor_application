@@ -50,15 +50,11 @@ export const transformEquation = ({ lhs, rhs }: SidesProps, helpers: TransformEq
   } = helpers
 
   const lhsLetterSplit = sideLetterSplit(leftSideVariable)
-  const rhsLetterSplit = sideLetterSplit(rightSideVariable)
 
   const lhsLetter = sideLetter(lhsLetterSplit)
-  const rhsLetter = sideLetter(rhsLetterSplit)
 
   // @ts-ignore
   const constantOperatorLeft = parse(lhs).op
-  // @ts-ignore
-  const constantOperatorRight = !rhsHasEmptyCoeff && parse(rhs).op
   // @ts-ignore
   const constantOnLeftSide = parse(lhs).args[1].value
   // @ts-ignore
@@ -75,7 +71,6 @@ export const transformEquation = ({ lhs, rhs }: SidesProps, helpers: TransformEq
 
   // @ts-ignore
   const constantRightSideCheck = constantOnRightSide ? constantOnRightSide : parse(rhs).args[1].value
-  // @ts-ignore
   // @ts-ignore
   const rhsWithCoefOnlyName = parse(rhs).args ? parse(rhs).args[1].name : parse(rhs).value
 
@@ -187,7 +182,7 @@ export const LHSNeedsDistrubition = (lhs: string, checkIfLHSHasBrackets: boolean
   const operatorIsAddition = getExpressionOperator === '+'
   const operatorIsSubtraction = getExpressionOperator === '-'
 
-  const { coeff: coeffInBracket, variable } = getVariableCoefficient(getExpressionInBrackets)
+  const { coeff: coeffInBracket } = getVariableCoefficient(getExpressionInBrackets)
   // @ts-ignore
   const constantNumberInBracket = parse(getExpressionInBrackets).args[1].value
 
