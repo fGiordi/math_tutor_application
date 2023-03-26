@@ -16,7 +16,7 @@ interface Calculate {
 
 const API = 'http://localhost:3030';
 
-export const calculateStore = create<Calculate>((set) => ({
+export const useCalculate = create<Calculate>((set) => ({
   equation: null,
   result: null,
   solveEquation: async (equation: string) => {

@@ -4,8 +4,21 @@ import Layout from '@/components/layout/Layout';
 import Seo from '@/components/Seo';
 import Link from 'next/link';
 import { AiFillCalculator } from 'react-icons/ai';
+import { useCalculate } from '@/store/api';
 
 export default function TutorMe() {
+  const [text, setText] = React.useState('');
+
+  const { solveEquation, equation, result } = useCalculate();
+
+  console.log('text', text);
+
+  // handle submit to api
+  const handleSubmit = (data: any) => {
+    data.preventDefault();
+    console.log('data', data);
+  };
+
   return (
     <Layout>
       {/* <Seo templateTitle='Home' /> */}
@@ -50,24 +63,28 @@ export default function TutorMe() {
             >
               Search
             </label>
-            <div className='relative'>
-              <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3'>
-                <AiFillCalculator size={20} className='h-8 w-8' />
+            <form onSubmit={(e) => handleSubmit(e)}>
+              <div className='relative'>
+                <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3'>
+                  <AiFillCalculator size={20} className='h-8 w-8' />
+                </div>
+                <input
+                  type='search'
+                  id='search'
+                  className='ml-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-4 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
+                  placeholder='Search'
+                  required
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                />
+                <button
+                  type='submit'
+                  className='absolute right-2.5 bottom-2.5 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
+                >
+                  Calculate
+                </button>
               </div>
-              <input
-                type='search'
-                id='search'
-                className='ml-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-4 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
-                placeholder='Search'
-                required
-              />
-              <button
-                type='submit'
-                className='absolute right-2.5 bottom-2.5 rounded-lg bg-blue-700 px-4 py-2 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-              >
-                Calculate
-              </button>
-            </div>
+            </form>
           </div>
           <div className='hidden lg:col-span-5 lg:mt-0 lg:flex'>
             <div className='mt-8 grid grid-cols-2 gap-4'>

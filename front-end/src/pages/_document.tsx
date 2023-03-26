@@ -1,6 +1,4 @@
 import { Head, Html, Main, NextScript } from 'next/document';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function Document() {
   return (
@@ -15,7 +13,6 @@ export default function Document() {
         />
       </Head>
       <body>
-        <ToastContainer />
         <Main />
         <NextScript />
       </body>

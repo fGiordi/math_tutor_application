@@ -1,3 +1,3 @@
-import { calculateStore } from './calculate';
+import { useCalculate } from './calculate';
 
-export { calculateStore };
+export { useCalculate };
