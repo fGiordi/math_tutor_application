@@ -5,6 +5,8 @@ import { Application } from '@feathersjs/feathers'
 import { ServiceTypes } from '../../../src/declarations'
 import request from 'supertest'
 import { ERROR_INVALID_MESSAGE } from '../../../src/services/calculate/hooks'
+import { expect } from 'chai'
+import { before, after } from 'mocha'
 
 describe('Calculate Service Tests', () => {
   it('registered the calculate service', () => {
@@ -139,6 +141,52 @@ describe('Calculate Service Tests', () => {
     } catch (error: unknown) {
       // @ts-ignore
       assert.strictEqual(error.message, ERROR_INVALID_MESSAGE)
+    }
+  })
+})
+
+describe('Calculate Service Integration Tests', async () => {
+  it('POST /calculate service returns steps and solution expression inside result object', async () => {
+    const expression = '10x + 20 = 30'
+
+    try {
+      const service = app.service('calculate')
+
+      const { result } = await service.create({ equation: expression })
+
+      expect(result).to.deep.equal({
+        steps: [
+          'Original equation: 10x + 20 = 30',
+          'Simplify LHS: 10x + 20',
+          'Simplify RHS: 30',
+          'Move all variable terms to LHS: 10x',
+          'Move all constant terms to RHS: 30  - 20',
+          'Add 20 to both sides: 10x + 20  - 20 = 30  - 20 ',
+          'Simplify and divide both sides by the factor: 10x = 10',
+          'Solution: x = 1'
+        ],
+        solution: 'x = 1'
+      })
+    } catch (error) {
+      // @ts-ignore
+      console.log('error on test', error.message)
+      // @ts-ignore
+      assert.strictEqual(error.message, 'Does not match')
+    }
+  })
+
+  it('POST /calculate service returns error on invalid input', async () => {
+    const expression = '10x + 2x + 3x'
+
+    try {
+      const service = app.service('calculate')
+
+      await service.create({ equation: expression })
+    } catch (error) {
+      // @ts-ignore
+      console.log('error on test', error.message)
+      // @ts-ignore
+      assert.strictEqual(error.message, 'Does not match')
     }
   })
 })

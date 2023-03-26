@@ -61,6 +61,7 @@
     "@feathersjs/transport-commons": "^5.0.1",
     "@feathersjs/typebox": "^5.0.1",
     "chai": "^4.3.7",
+    "jest": "^29.5.0",
     "knex": "^2.4.2",
     "mathjs": "^11.7.0",
     "sqlite3": "^5.1.4",
