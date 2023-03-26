@@ -6,8 +6,17 @@ This is the backend for the Maths equation tutor. We are required to write an ap
 
 You should be able to input the equation into the application and, expect to be given steps on how to solve the equation.
 
-- You can send through the following example: 2(4x + 3) + 6= 9 - 4x
-- You will be given the steps on how to solve the equation:
+- You can send through the following types of equations:
+
+  - 2(4x + 3) + 6 = 9 - 4x
+  - 7x - 2 = 10x
+  - 2(4y + 3) + 6 = 9 - 4y
+  - 3(4x + 3) + 6 = 39 + 2x
+  - 3x + 2 = 9 - 4x
+
+- You will be given the steps on how to solve the equation: the result will be as follows:
+  - steps: []: An Array of the simplified steps and guidance on how you can solve the equation
+  - solution: string: a value which contains the solution to the equation, this was useful for testing output purposes and for the UI, if there is time for it.
 
 ## Please Note:
 
@@ -26,7 +35,7 @@ You should be able to input the equation into the application and, expect to be 
 3. Start your app
 
    ```
-   npm start
+   npm run dev
    ```
 
 4. Ensure you have an http client tool installed like [POSTMAN](https://www.postman.com/) or [ThunderClient](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)

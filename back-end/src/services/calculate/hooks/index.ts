@@ -37,8 +37,6 @@ async function solveEquation(equation: string) {
     // Step 2: handle distribution if need be
     const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets, lhsLetter)
     const updatedVariableCoeff = updatedLHS.split(lhsLetter)[0]
-    console.log('updatedLHS', updatedLHS)
-    console.log('updatedVariableCoeff', updatedVariableCoeff)
 
     // check if LHS containts parentesis for distrubution and multiplication
 
@@ -48,18 +46,21 @@ async function solveEquation(equation: string) {
     const hasEmptyRightCoeff = rightSideCoeff == 0
 
     // // // Step 3: Move all the variable terms to one side and all the constant terms to the other side
-    const transformed = transformEquation(updatedLHS, rhs, {
-      distributedSteps,
-      rhsHasEmptyCoeff: hasEmptyRightCoeff,
-      simplifiedSteps: preSteps,
-      rightSideCoeff,
-      rightSideVariable,
-      leftSideCoeff,
-      leftSideVariable,
-      checkIfLHSHasBrackets,
-      updatedVariableCoeffNumber: Number(updatedVariableCoeff),
-      updatedVariableCoeff: `${updatedVariableCoeff}${lhsLetter}`
-    })
+    const transformed = transformEquation(
+      { lhs: updatedLHS, rhs },
+      {
+        distributedSteps,
+        rhsHasEmptyCoeff: hasEmptyRightCoeff,
+        simplifiedSteps: preSteps,
+        rightSideCoeff,
+        rightSideVariable,
+        leftSideCoeff,
+        leftSideVariable,
+        checkIfLHSHasBrackets,
+        updatedVariableCoeffNumber: Number(updatedVariableCoeff),
+        updatedVariableCoeff: `${updatedVariableCoeff}${lhsLetter}`
+      }
+    )
 
     return transformed
   } catch (error: unknown) {

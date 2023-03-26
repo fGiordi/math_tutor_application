@@ -13,6 +13,11 @@ interface TransformEquationHelpers {
   rhsHasEmptyCoeff?: boolean
 }
 
+interface SidesProps {
+  lhs: string
+  rhs: string
+}
+
 export const getVariableCoefficient = (side: string) => {
   // Helper function to get the coefficient of the variable term in a side of the equation
   const variableMatch = side.match(/[+-]?[\d]*[a-z]/g)
@@ -27,7 +32,7 @@ export const sideLetter = (sideSplit: string[]) => {
   return sideSplit[sideSplit.length - 1]
 }
 
-export const transformEquation = (lhs: string, rhs: string, helpers: TransformEquationHelpers) => {
+export const transformEquation = ({ lhs, rhs }: SidesProps, helpers: TransformEquationHelpers) => {
   // Move all the variable terms to the left-hand side of the equation
   // and all the constant terms to the right-hand side of the equation
 
@@ -176,15 +181,11 @@ export const LHSNeedsDistrubition = (lhs: string, checkIfLHSHasBrackets: boolean
   const getNumberFromFirstPart = Number(firstPart.split('(')[0])
   const getExpressionInBrackets = firstPart.split('(')[1]
 
-  const getExpressionInBracketsParse = parse(getExpressionInBrackets)
-
   // @ts-ignore
   const getExpressionOperator = parse(getExpressionInBrackets).op
 
   const operatorIsAddition = getExpressionOperator === '+'
   const operatorIsSubtraction = getExpressionOperator === '-'
-
-  const operatorBeforeSign = operatorIsAddition ? ' + ' : operatorIsSubtraction ? ' - ' : ' '
 
   const { coeff: coeffInBracket, variable } = getVariableCoefficient(getExpressionInBrackets)
   // @ts-ignore
