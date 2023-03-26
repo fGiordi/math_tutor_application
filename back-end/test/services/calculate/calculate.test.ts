@@ -1,12 +1,8 @@
 // For more information about this file see https://dove.feathersjs.com/guides/cli/service.test.html
 import assert from 'assert'
 import { app } from '../../../src/app'
-import { Application } from '@feathersjs/feathers'
-import { ServiceTypes } from '../../../src/declarations'
-import request from 'supertest'
 import { ERROR_INVALID_MESSAGE } from '../../../src/services/calculate/hooks'
 import { expect } from 'chai'
-import { before, after } from 'mocha'
 
 describe('Calculate Service Tests', () => {
   it('registered the calculate service', () => {
