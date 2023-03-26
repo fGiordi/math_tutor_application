@@ -88,7 +88,7 @@ describe('Calculate Service Tests', () => {
       result: { solution, steps }
     } = await service.create({ equation: expression })
 
-    assert.equal(solution, 'x = -5')
+    assert.equal(solution, 'x = -1.667')
     assert.deepStrictEqual(steps, [
       'Original equation: 2(4x + 3) + 6 = 2x + 2',
       'Simplify LHS: 2(4x + 3) + 6',
@@ -96,12 +96,12 @@ describe('Calculate Service Tests', () => {
       'Distribute LHS: 2 (4 x + 3) + 6',
       'Add Numbers on LHS: 8x +6  + 6',
       'Simplify liked terms on LHS: 8x + 12',
-      'Move all variable terms to LHS: 4x  - 2x',
+      'Move all variable terms to LHS: 8x  - 2x',
       'Move all constant terms to RHS: 2   - 12   ',
-      'Add the liked terms on LHS: 1. 4x   - 2x  = 2x',
+      'Add the liked terms on LHS: 1. 8x   - 2x  = 6x',
       'Add the liked terms on RHS: 2: 2  - 12  = -10  ',
-      'Simplify and divide both sides by the factor: 2x = -10 ',
-      'Solution: x = -5'
+      'Simplify and divide both sides by the factor: 6x = -10 ',
+      'Solution: x = -1.667'
     ])
   })
 

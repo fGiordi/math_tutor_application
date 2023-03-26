@@ -1,4 +1,4 @@
-import { divide, add, multiply, parse, simplify, round } from 'mathjs'
+import { divide, add, multiply, parse, simplify, round, subtract } from 'mathjs'
 
 interface TransformEquationHelpers {
   rightSideCoeff: number
@@ -95,22 +95,27 @@ export const transformEquation = (lhs: string, rhs: string, helpers: TransformEq
     ? round(Number(divide(addRightSide, updatedVariableCoeffNumber)), 3)
     : round(Number(divide(addRightSide, leftSideCoeff)), 3)
 
+  const lhsCheckDistributedVariable = checkIfLHSHasBrackets ? updatedVariableCoeff : leftSideVariable
+  const distrubtedAddLHS = coeffSignRight.includes('-')
+    ? subtract(updatedVariableCoeffNumber, addLeftSide)
+    : add(updatedVariableCoeffNumber, addLeftSide)
+
   const steps = rhsHasEmptyCoeff
     ? [
-        `Move all variable terms to LHS: ${checkIfLHSHasBrackets ? updatedVariableCoeff : leftSideVariable}`,
+        `Move all variable terms to LHS: ${lhsCheckDistributedVariable}`,
         `Move all constant terms to RHS: ${rhs} ${constantWithSignLeft}`,
         `Add ${constantOnLeftSide} to both sides: ${lhs} ${constantWithSignLeft} = ${rhs} ${constantWithSignLeft} `,
-        `Simplify and divide both sides by the factor: ${
-          checkIfLHSHasBrackets ? updatedVariableCoeff : leftSideVariable
-        } = ${addRightSide}`,
+        `Simplify and divide both sides by the factor: ${lhsCheckDistributedVariable} = ${addRightSide}`,
         `Solution: ${lhsLetter} = ${rhsHasEmptyCoeffSolution}`
       ]
     : [
-        `Move all variable terms to LHS: ${leftSideVariable} ${coeffSignRight}`,
+        `Move all variable terms to LHS: ${lhsCheckDistributedVariable} ${coeffSignRight}`,
         `Move all constant terms to RHS: ${
           rhsWithCoefOnly ? `${constantWithSignLeft}` : `${constantRightSideCheck}  ${constantWithSignLeft}`
         }   `,
-        `Add the liked terms on LHS: 1. ${leftSideVariable}  ${coeffSignRight}  = ${addLeftSide}${lhsLetter}`,
+        `Add the liked terms on LHS: 1. ${lhsCheckDistributedVariable}  ${coeffSignRight}  = ${
+          checkIfLHSHasBrackets ? distrubtedAddLHS : addLeftSide
+        }${lhsLetter}`,
         `Add the liked terms on RHS: 2: ${
           rhsWithCoefOnly
             ? `${constantWithSignLeft}`
@@ -119,7 +124,7 @@ export const transformEquation = (lhs: string, rhs: string, helpers: TransformEq
         `Simplify and divide both sides by the factor: ${
           rhsWithCoefOnly
             ? `${addLeftSide}${lhsLetter} = ${constantWithSignLeft}`
-            : `${addLeftSide}${lhsLetter} = ${addRightSide}`
+            : `${checkIfLHSHasBrackets ? distrubtedAddLHS : addLeftSide}${lhsLetter} = ${addRightSide}`
         } `,
         `Solution: ${lhsLetter} = ${
           rhsWithCoefOnly
@@ -132,6 +137,8 @@ export const transformEquation = (lhs: string, rhs: string, helpers: TransformEq
                 ),
                 3
               )
+            : checkIfLHSHasBrackets
+            ? round(Number(divide(addRightSide, distrubtedAddLHS)), 3)
             : round(Number(divide(addRightSide, addLeftSide)), 3)
         }`
       ]
