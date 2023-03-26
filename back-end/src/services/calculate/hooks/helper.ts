@@ -7,6 +7,9 @@ interface TransformEquationHelpers {
   leftSideVariable: string
   distributedSteps: string[]
   simplifiedSteps: string[]
+  updatedVariableCoeff: string
+  updatedVariableCoeffNumber: number
+  checkIfLHSHasBrackets: boolean
   rhsHasEmptyCoeff?: boolean
 }
 
@@ -35,7 +38,10 @@ export const transformEquation = (lhs: string, rhs: string, helpers: TransformEq
     leftSideVariable,
     distributedSteps,
     rhsHasEmptyCoeff,
-    simplifiedSteps
+    simplifiedSteps,
+    updatedVariableCoeff,
+    updatedVariableCoeffNumber,
+    checkIfLHSHasBrackets
   } = helpers
 
   const lhsLetterSplit = sideLetterSplit(leftSideVariable)
@@ -85,13 +91,19 @@ export const transformEquation = (lhs: string, rhs: string, helpers: TransformEq
 
   // Display the steps to solve the equation
 
+  const rhsHasEmptyCoeffSolution = checkIfLHSHasBrackets
+    ? round(Number(divide(addRightSide, updatedVariableCoeffNumber)), 3)
+    : round(Number(divide(addRightSide, leftSideCoeff)), 3)
+
   const steps = rhsHasEmptyCoeff
     ? [
-        `Move all variable terms to LHS: ${leftSideVariable}`,
+        `Move all variable terms to LHS: ${checkIfLHSHasBrackets ? updatedVariableCoeff : leftSideVariable}`,
         `Move all constant terms to RHS: ${rhs} ${constantWithSignLeft}`,
         `Add ${constantOnLeftSide} to both sides: ${lhs} ${constantWithSignLeft} = ${rhs} ${constantWithSignLeft} `,
-        `Simplify and divide both sides by the factor: ${leftSideVariable} = ${addRightSide}`,
-        `Solution: ${lhsLetter} = ${round(Number(divide(addRightSide, leftSideCoeff)), 3)}`
+        `Simplify and divide both sides by the factor: ${
+          checkIfLHSHasBrackets ? updatedVariableCoeff : leftSideVariable
+        } = ${addRightSide}`,
+        `Solution: ${lhsLetter} = ${rhsHasEmptyCoeffSolution}`
       ]
     : [
         `Move all variable terms to LHS: ${leftSideVariable} ${coeffSignRight}`,

@@ -28,7 +28,7 @@ async function solveEquation(equation: string) {
     const bothExist = lhsLetter && rhsLetter
 
     if (bothExist && lhsLetter !== rhsLetter) {
-      throw new Error('Variables are not the same')
+      throw new Error('Variables are not the same. Please keep it consistent on both sides')
     }
 
     // check if distribution is required
@@ -36,6 +36,9 @@ async function solveEquation(equation: string) {
 
     // Step 2: handle distribution if need be
     const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets, lhsLetter)
+    const updatedVariableCoeff = updatedLHS.split(lhsLetter)[0]
+    console.log('updatedLHS', updatedLHS)
+    console.log('updatedVariableCoeff', updatedVariableCoeff)
 
     // check if LHS containts parentesis for distrubution and multiplication
 
@@ -52,7 +55,10 @@ async function solveEquation(equation: string) {
       rightSideCoeff,
       rightSideVariable,
       leftSideCoeff,
-      leftSideVariable
+      leftSideVariable,
+      checkIfLHSHasBrackets,
+      updatedVariableCoeffNumber: Number(updatedVariableCoeff),
+      updatedVariableCoeff: `${updatedVariableCoeff}${lhsLetter}`
     })
 
     return transformed
