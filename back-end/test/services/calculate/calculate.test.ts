@@ -171,7 +171,7 @@ describe('Calculate Service Integration Tests', async () => {
       // @ts-ignore
       console.log('error on test', error.message)
       // @ts-ignore
-      assert.strictEqual(error.message, 'Does not match')
+      assert.strictEqual(error.message, ERROR_INVALID_MESSAGE)
     }
   })
 
@@ -186,7 +186,17 @@ describe('Calculate Service Integration Tests', async () => {
       // @ts-ignore
       console.log('error on test', error.message)
       // @ts-ignore
-      assert.strictEqual(error.message, 'Does not match')
+      assert.strictEqual(error.message, ERROR_INVALID_MESSAGE)
     }
+  })
+
+  it('Assert equal Test for 2(4x + 3) + 6 = 10', async () => {
+    const {
+      result: { solution }
+    } = await app.service('calculate').create({
+      equation: '2(4x + 3) + 6 = 10'
+    })
+
+    assert.equal(solution, 'x = -0.25')
   })
 })
