@@ -11,7 +11,7 @@ You should be able to input the equation into the application and, expect to be 
 
 ## Please Note:
 
-- If you are going to switch the variable from x to y or any other letter, ensure that its consistent on the RHS if you intend to use a variable on both sides as this is not factored into use case, however, I have check that will handle this and output to the user to stick to a consitent format.
+- If you are going to switch the variable from x to y or any other letter, ensure that its consistent on the RHS if you intend to use a variable on both sides as this is not factored into use case, however, I have an error check that will handle this and output to the user the relevant message if there is inconsistent variables sent through
 
 ## Getting Started
 
@@ -29,9 +29,39 @@ You should be able to input the equation into the application and, expect to be 
    npm start
    ```
 
+4. Ensure you have an http client tool installed like [POSTMAN](https://www.postman.com/) or [ThunderClient](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)
+   ```
+   I use Thunder client, because you can install it on VSCODE and never need to leave the applciation to test the API.
+   Once you have this tool ensure your server is running: and go to the http://localhost:3030/calculate endpoint.
+   We are sending a post request with the following payload example:
+   {
+   "equation": "2(4y + 3) + 6 = 10 + 2y"
+   }
+   or
+   {
+    "equation": "3x + 2 = 9 - 4x"
+   }
+   Use any of the Equations Tested samples below to see what you can do with this API
+   ```
+
 ## Testing
 
 Run `npm test` and all your tests in the `test/` directory will be run.
+
+### Which tests should be run:
+
+    ```
+    Case: Solve for 2x + 13 = 5 should return -4
+    Case: Solve 3x + 2 = 9 - 4x should return 1
+    Case: Solve 4x + 12 = 2x should return - 6
+    Case: Solve 2(4x + 3) + 6 = 2x + 2 should return x = -1.667"
+    Case: Solve 3(4x + 3) + 6 = 39 should return x = 2"
+    Case: returns an error for an invalid algebraic expression for 10x + 6x + 4x
+
+    Case: POST /calculate service returns steps and solution expression inside result object
+    Case: Test variables consisency on LHS and RHS
+
+    ```
 
 # Equations Tested:
 
@@ -43,3 +73,4 @@ Run `npm test` and all your tests in the `test/` directory will be run.
     - 2(4x + 3) + 6 = 10
     - 4x + 3 = 2x
     - 7x - 2 = 10x
+    - 3(4x + 3) + 6 = 39 + 2x

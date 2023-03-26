@@ -13,7 +13,6 @@ describe('Calculate Service Tests', () => {
     assert.ok(service, 'Registered the service')
   })
 
-  //
   it('Solve for 2x + 13 = 5 should return -4', async () => {
     const expression = '2x + 13 = 5'
     const service = app.service('calculate')
@@ -167,7 +166,7 @@ describe('Calculate Service Integration Tests', async () => {
       })
     } catch (error) {
       // @ts-ignore
-      console.log('error on test', error.message)
+      console.log('error on test returning result object', error.message)
       // @ts-ignore
       assert.strictEqual(error.message, ERROR_INVALID_MESSAGE)
     }
@@ -196,5 +195,27 @@ describe('Calculate Service Integration Tests', async () => {
     })
 
     assert.equal(solution, 'x = -0.25')
+  })
+
+  it('Solve for y: 2(4y + 3) + 6 = 10 + 2y', async () => {
+    const {
+      result: { solution }
+    } = await app.service('calculate').create({
+      equation: '2(4y + 3) + 6 = 10 + 2y'
+    })
+
+    assert.equal(solution, 'y = -0.333')
+  })
+  it('Assert test variables consisency on LHS and RHS', async () => {
+    try {
+      await app.service('calculate').create({
+        equation: '2(4y + 3) + 6 = 10 + 2x'
+      })
+    } catch (error) {
+      // @ts-ignore
+      assert.strictEqual(error.message, ERROR_INVALID_MESSAGE)
+      // @ts-ignore
+      console.log('Please ensure LHS variable is same value as RHS', error.message)
+    }
   })
 })
