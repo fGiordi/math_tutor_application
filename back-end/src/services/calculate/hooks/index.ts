@@ -13,6 +13,7 @@ export const ERROR_INVALID_MESSAGE = `Please ensure the format is correct: See e
 async function solveEquation(equation: string) {
   try {
     // Step 1: Parse the input equation string
+
     const [lhs, rhs] = equation.split('=').map((side) => side.trim())
 
     const { coeff: leftSideCoeff, variable: leftSideVariable } = getVariableCoefficient(lhs)
@@ -24,11 +25,17 @@ async function solveEquation(equation: string) {
     const lhsLetter = sideLetter(lhsLetterSplit)
     const rhsLetter = sideLetter(rhsLetterSplit)
 
+    const bothExist = lhsLetter && rhsLetter
+
+    if (bothExist && lhsLetter !== rhsLetter) {
+      throw new Error('Variables are not the same')
+    }
+
     // check if distribution is required
     const checkIfLHSHasBrackets = lhs.includes('(')
 
     // Step 2: handle distribution if need be
-    const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets)
+    const { updatedLHS, distributedSteps } = LHSNeedsDistrubition(lhs, checkIfLHSHasBrackets, lhsLetter)
 
     // check if LHS containts parentesis for distrubution and multiplication
 

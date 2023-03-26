@@ -144,7 +144,7 @@ export const breakDownEquation = (lhs: string, rhs: string, originalEquation: st
   return { allSteps }
 }
 
-export const LHSNeedsDistrubition = (lhs: string, checkIfLHSHasBrackets: boolean) => {
+export const LHSNeedsDistrubition = (lhs: string, checkIfLHSHasBrackets: boolean, variableLetter: string) => {
   if (!checkIfLHSHasBrackets)
     return {
       updatedLHS: lhs,
@@ -184,11 +184,11 @@ export const LHSNeedsDistrubition = (lhs: string, checkIfLHSHasBrackets: boolean
   // @ts-ignore
   const constantAdded = add(Number(calcConstant), Number(simplify(secondPart).value))
 
-  const distrubtedExpression = `${calcCoef}x ${
+  const distrubtedExpression = `${calcCoef}${variableLetter} ${
     operatorIsSubtraction ? '' : operatorIsAddition === true && '+'
   }${calcConstant} ${secondPart}`
 
-  const newLHS = `${calcCoef}x ${
+  const newLHS = `${calcCoef}${variableLetter} ${
     operatorIsSubtraction ? '' : operatorIsAddition === true && '+'
   } ${constantAdded}`
 
