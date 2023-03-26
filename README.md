@@ -47,6 +47,7 @@ You should be able to input the equation into the application and, expect to be 
 - Once on home page, click on Get started button to get taken to the tutor route
 - When you are on the tutor-me route, you can now test the backend by providing the equations in the expected format to test the output (see Equations tested below for example of what you can test)
 - Click Calculate once, you have inputted your equation and wait for the steps/output or error to appear.
+- You can click reload button to reset the state and refresh the page.
   b)This is a purely API testing without any client: Ensure you have an http client tool installed like [POSTMAN](https://www.postman.com/) or [ThunderClient](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)
   ```
   I use Thunder client, because you can install it on VSCODE and never need to leave the applciation to test the API.
