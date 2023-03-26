@@ -63,7 +63,6 @@ export default function ComponentsPage() {
               >
                 Set to {mode === 'dark' ? 'light' : 'dark'}
               </Button>
-              {/* <Button onClick={randomize}>Randomize CSS Variable</Button> */}
             </div>
 
             <ol className='mt-8 space-y-6'>
@@ -462,7 +461,7 @@ export default function ComponentsPage() {
   );
 }
 
-const colorList = [
+export const colorList = [
   'rose',
   'pink',
   'fuchsia',

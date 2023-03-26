@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { toast } from 'react-toastify';
-
 import axios from 'axios';
 
 interface Result {
@@ -24,14 +23,17 @@ export const useCalculate = create<Calculate>((set) => ({
       const sendData = await axios.post(`${API}/calculate`, {
         equation: equation,
       });
-      console.log('sendData', sendData);
-      set({ result: sendData.data });
+
+      set({ result: sendData.data.result });
+      toast('Equation complete', { type: 'success' });
     } catch (error) {
       // @ts-ignore
-      console.log('error on solve equation', error.message);
-      toast('Error on solve equation', {
+      toast(error.message, {
         type: 'error',
       });
+      // @ts-ignore
+      console.log('error on solve equation', error.message);
+      // @ts-ignore
     }
   },
 }));

@@ -3,15 +3,12 @@ import * as React from 'react';
 import Layout from '@/components/layout/Layout';
 import Seo from '@/components/Seo';
 import Link from 'next/link';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 export default function HomePage() {
   return (
     <Layout>
       {/* <Seo templateTitle='Home' /> */}
       <Seo />
-      <ToastContainer />
 
       <section className='bg-indigo-600 dark:bg-gray-900'>
         <div className='mx-auto grid max-w-screen-xl px-4 py-8 lg:grid-cols-12 lg:gap-8 lg:py-16 xl:gap-0'>
@@ -68,10 +65,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className='bg-white dark:bg-gray-900'>
+      <section className='bg-white dark:bg-indigo-600'>
         <div className='mx-auto max-w-screen-xl items-center gap-16 py-8 px-4 lg:grid  lg:py-10 lg:px-6'>
           <div className='flex grid-cols-4 flex-col gap-5 lg:grid'>
-            <div className='font-light text-gray-500 dark:text-gray-400 sm:text-lg'>
+            <div className='font-light text-gray-500 dark:text-white sm:text-lg'>
               <h2 className='text-xxl mb-4 font-extrabold tracking-tight text-gray-900 dark:text-white'>
                 Interactive examples:
               </h2>
@@ -82,7 +79,7 @@ export default function HomePage() {
                 steps involved in solving linear equations.
               </p>
             </div>
-            <div className='font-light text-gray-500 dark:text-gray-400 sm:text-lg'>
+            <div className='font-light text-gray-500 dark:text-white sm:text-lg'>
               <h2 className='text-xxl mb-4 font-extrabold tracking-tight text-gray-900 dark:text-white'>
                 Step-by-step guidance:
               </h2>
@@ -94,7 +91,7 @@ export default function HomePage() {
                 selection of practice problems that students
               </p>
             </div>
-            <div className='font-light text-gray-500 dark:text-gray-400 sm:text-lg'>
+            <div className='font-light text-gray-500 dark:text-white sm:text-lg'>
               <h2 className='text-xxl mb-4 font-extrabold tracking-tight text-gray-900 dark:text-white'>
                 Practice problems:
               </h2>
@@ -106,7 +103,7 @@ export default function HomePage() {
                 progress.
               </p>
             </div>
-            <div className='font-light text-gray-500 dark:text-gray-400 sm:text-lg'>
+            <div className='font-light text-gray-500 dark:text-white sm:text-lg'>
               <h2 className='text-xxl mb-4 font-extrabold tracking-tight text-gray-900 dark:text-white'>
                 Feedback and explanations:
               </h2>

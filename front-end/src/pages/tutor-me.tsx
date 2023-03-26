@@ -5,18 +5,21 @@ import Seo from '@/components/Seo';
 import Link from 'next/link';
 import { AiFillCalculator } from 'react-icons/ai';
 import { useCalculate } from '@/store/api';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import Stepper from '@/components/Stepper';
+
+interface IFormInput {
+  equation: string;
+}
 
 export default function TutorMe() {
   const [text, setText] = React.useState('');
 
   const { solveEquation, equation, result } = useCalculate();
+  const { register, handleSubmit } = useForm<IFormInput>();
 
-  console.log('text', text);
-
-  // handle submit to api
-  const handleSubmit = (data: any) => {
-    data.preventDefault();
-    console.log('data', data);
+  const onSubmit: SubmitHandler<IFormInput> = async (data) => {
+    await solveEquation(data.equation);
   };
 
   return (
@@ -58,12 +61,12 @@ export default function TutorMe() {
               </Link>
             </div>
             <label
-              htmlFor='search'
+              htmlFor='equation'
               className='sr-only mb-2 text-sm font-medium text-gray-900 dark:text-white'
             >
-              Search
+              Equation
             </label>
-            <form onSubmit={(e) => handleSubmit(e)}>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className='relative'>
                 <div className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3'>
                   <AiFillCalculator size={20} className='h-8 w-8' />
@@ -71,8 +74,9 @@ export default function TutorMe() {
                 <input
                   type='search'
                   id='search'
+                  {...register('equation')}
                   className='ml-2 block w-full rounded-lg border border-gray-300 bg-gray-50 p-4 pl-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500'
-                  placeholder='Search'
+                  placeholder='Equation'
                   required
                   value={text}
                   onChange={(e) => setText(e.target.value)}
@@ -111,15 +115,23 @@ export default function TutorMe() {
         }}
       >
         <div className='container mx-auto flex flex-col items-center justify-center px-5 py-24'>
-          <div className='w-full text-center lg:w-5/12'>
-            <h1 className='my-4 text-5xl font-bold leading-tight'>Steps</h1>
-            <p className='mb-8 text-2xl'>Step 1 - 5</p>
-            <div className='mx-auto flex justify-center'>
-              <button className='rounded-full bg-white py-4 px-8 font-bold  text-gray-800 hover:underline'>
-                View Solution
-              </button>
-              <button className='ml-4 rounded-full bg-white py-4 px-8 font-bold  text-gray-800 hover:underline'>
-                Contact Us
+          <div className='w-full text-center '>
+            <h1 className='my-4 text-5xl font-bold leading-tight'>
+              Steps: {text}
+            </h1>
+            <p className='mb-8 text-2xl'>
+              Step
+              {result?.steps
+                ? ` 1 - ${result?.steps.length}`
+                : ` No steps found `}
+            </p>
+            <Stepper steps={result?.steps || []} />
+            <div className='mx-auto mt-5 flex justify-center'>
+              <button
+                className='ml-4 rounded-full bg-white py-4 px-8 font-bold  text-gray-800 hover:underline'
+                onClick={() => window.location.reload()}
+              >
+                Reload
               </button>
             </div>
           </div>
