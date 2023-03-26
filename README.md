@@ -20,7 +20,9 @@ You should be able to input the equation into the application and, expect to be 
 
 ## Please Note:
 
-- If you are going to switch the variable from x to y or any other letter, ensure that its consistent on the RHS if you intend to use a variable on both sides as this is not factored into use case, however, I have an error check that will handle this and output to the user the relevant message if there is inconsistent variables sent through
+- If you are going to switch the variable from x to y or any other letter, ensure that its consistent on the RHS if you intend to use a variable on both sides as this is not factored into use case, however, I have an error check that will handle this and output to the user the relevant message if there is inconsistent variables sent through.
+- For UI, I am using very basic validation on the form, and expect the user to be aware of the equations and how to write these.
+- I am hanling most errors on the API side, so if there is any invalid input, there will be a toast to notify the user of this.
 
 ## Getting Started
 
@@ -38,20 +40,27 @@ You should be able to input the equation into the application and, expect to be 
    npm run dev
    ```
 
-4. Ensure you have an http client tool installed like [POSTMAN](https://www.postman.com/) or [ThunderClient](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)
-   ```
-   I use Thunder client, because you can install it on VSCODE and never need to leave the applciation to test the API.
-   Once you have this tool ensure your server is running: and go to the http://localhost:3030/calculate endpoint.
-   We are sending a post request with the following payload example:
-   {
-   "equation": "2(4y + 3) + 6 = 10 + 2y"
-   }
-   or
-   {
-    "equation": "3x + 2 = 9 - 4x"
-   }
-   Use any of the Equations Tested samples below to see what you can do with this API
-   ```
+4. a) I have provided a client interface for the backend testing: See steps on how to test this: - cd into front-end and run yarn to install dependencies
+
+- Once dependencies are installed, make sure your api is running locally too on port 3030 ( we need the backend running to test the UI)
+- run yarn dev to start the server on client side
+- Once on home page, click on Get started button to get taken to the tutor route
+- When you are on the tutor-me route, you can now test the backend by providing the equations in the expected format to test the output (see Equations tested below for example of what you can test)
+- Click Calculate once, you have inputted your equation and wait for the steps/output or error to appear.
+  b)This is a purely API testing without any client: Ensure you have an http client tool installed like [POSTMAN](https://www.postman.com/) or [ThunderClient](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client)
+  ```
+  I use Thunder client, because you can install it on VSCODE and never need to leave the applciation to test the API.
+  Once you have this tool ensure your server is running: and go to the http://localhost:3030/calculate endpoint.
+  We are sending a post request with the following payload example:
+  {
+  "equation": "2(4y + 3) + 6 = 10 + 2y"
+  }
+  or
+  {
+   "equation": "3x + 2 = 9 - 4x"
+  }
+  Use any of the Equations Tested samples below to see what you can do with this API
+  ```
 
 ## Testing
 
