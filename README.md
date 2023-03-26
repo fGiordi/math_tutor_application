@@ -43,15 +43,18 @@ You should be able to input the equation into the application and, expect to be 
 
 4.  Run Client
 
-I have provided a client interface for the backend testing: See steps on how to test this:
+    cd into front-end and run yarn to install dependencies
+    Once dependencies are installed, make sure your api is running locally too on port 3030 ( we need the backend running to test the UI)
 
-cd into front-end and run yarn to install dependencies
--Once dependencies are installed, make sure your api is running locally too on port 3030 ( we need the backend running to test the UI)
-run yarn dev to start the server on client side
--Once on home page, click on Get started button to get taken to the tutor route
--When you are on the tutor-me route, you can now test the backend by providing the equations in the expected format to test the output (see Equations tested below for example of what you can test)
--Click Calculate once, you have inputted your equation and wait for the steps/output or error to appear
--You can click reload button to reset the state and refresh the page.
+    run yarn dev to start the server on client side
+
+    Once on home page, click on Get started button to get taken to the tutor route
+
+    When you are on the tutor-me route, you can now test the backend by providing the equations in the expected format to test the output (see Equations tested below for example of what you can test)
+
+    Click Calculate once, you have inputted your equation and wait for the steps/output or error to appear
+
+    You can click reload button to reset the state and refresh the page.
 
 5.  (OPTIONAL)
 
