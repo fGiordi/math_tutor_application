@@ -1,6 +1,6 @@
 ## About
 
-This is the backend for the Maths equation tutor. We are required to write an application that solves for equations 2x - 2 = 10 and 2(4x + 3) + 6= 9 - 4x and provides the steps for solving the equation.
+This is the backend for the Maths equation tutor. We are required to write an application that solves for equations 2x - 2 = 10 and 2(4x + 3) + 6 = 9 - 4x and provides the steps for solving the equation.
 
 ## How the application works
 
@@ -23,6 +23,7 @@ You should be able to input the equation into the application and, expect to be 
 - If you are going to switch the variable from x to y or any other letter, ensure that its consistent on the RHS if you intend to use a variable on both sides as this is not factored into use case, however, I have an error check that will handle this and output to the user the relevant message if there is inconsistent variables sent through.
 - For UI, I am using very basic validation on the form, and expect the user to be aware of the equations and how to write these.
 - I am hanling most errors on the API side, so if there is any invalid input, there will be a toast to notify the user of this.
+- If you run the tests and see errors, but the tests passes this working as expected, because I have some tests that are returning errors for invalid inputs.
 
 ## Getting Started
 
@@ -93,3 +94,6 @@ Run `npm test` and all your tests in the `test/` directory will be run.
     - 4x + 3 = 2x
     - 7x - 2 = 10x
     - 3(4x + 3) + 6 = 39 + 2x
+
+Thank you
+Made by Giordi Fungula
