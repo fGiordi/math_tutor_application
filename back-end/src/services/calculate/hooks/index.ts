@@ -18,11 +18,11 @@ async function solveEquation(equation: string) {
     const { coeff: leftSideCoeff, variable: leftSideVariable } = getVariableCoefficient(lhs)
     const { coeff: rightSideCoeff, variable: rightSideVariable } = getVariableCoefficient(rhs)
 
-    const lhsLetterSplit = sideLetterSplit(lhs)
-    const rhsLetterSplit = sideLetterSplit(rhs)
+    const lhsLetterSplit = sideLetterSplit(leftSideVariable)
+    const rhsLetterSplit = sideLetterSplit(rightSideVariable)
 
-    // const lhsLetter = sideLetter(lhs, lhsLetterSplit)
-    // const rhsLetter = sideLetter(rhs, rhsLetterSplit)
+    const lhsLetter = sideLetter(lhsLetterSplit)
+    const rhsLetter = sideLetter(rhsLetterSplit)
 
     // check if distribution is required
     const checkIfLHSHasBrackets = lhs.includes('(')

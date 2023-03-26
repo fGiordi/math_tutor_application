@@ -20,8 +20,8 @@ export const getVariableCoefficient = (side: string) => {
 }
 export const sideLetterSplit = (side: string) => side.split('')
 
-export const sideLetter = (side: string, sideSplit: string[]) => {
-  return sideSplit[side.length - 1]
+export const sideLetter = (sideSplit: string[]) => {
+  return sideSplit[sideSplit.length - 1]
 }
 
 export const transformEquation = (lhs: string, rhs: string, helpers: TransformEquationHelpers) => {
@@ -38,11 +38,11 @@ export const transformEquation = (lhs: string, rhs: string, helpers: TransformEq
     simplifiedSteps
   } = helpers
 
-  const lhsLetterSplit = sideLetterSplit(lhs)
-  const rhsLetterSplit = sideLetterSplit(rhs)
+  const lhsLetterSplit = sideLetterSplit(leftSideVariable)
+  const rhsLetterSplit = sideLetterSplit(rightSideVariable)
 
-  const lhsLetter = sideLetter(lhs, lhsLetterSplit)
-  const rhsLetter = sideLetter(rhs, rhsLetterSplit)
+  const lhsLetter = sideLetter(lhsLetterSplit)
+  const rhsLetter = sideLetter(rhsLetterSplit)
 
   // @ts-ignore
   const constantOperatorLeft = parse(lhs).op
