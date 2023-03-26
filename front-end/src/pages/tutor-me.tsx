@@ -126,6 +126,16 @@ export default function TutorMe() {
                 : ` No steps found `}
             </p>
             <Stepper steps={result?.steps || []} />
+            {result && result.steps && (
+              <h3 className='mb-2'>
+                Summary: To solve equation {text} See the following summarised
+                steps below:
+              </h3>
+            )}
+            {result?.steps.map((step) => {
+              return <span className='block'>{step}</span>;
+            })}
+
             <div className='mx-auto mt-5 flex justify-center'>
               <button
                 className='ml-4 rounded-full bg-white py-4 px-8 font-bold  text-gray-800 hover:underline'
